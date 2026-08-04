@@ -1,0 +1,420 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+4 0 obj
+<< /Length 3525 >>
+stream
+BT /F3 16 Tf 54 734 Td (Senior Rebuild Prompt: Focus Buddy Chrome Extension) Tj ET
+BT /F1 10 Tf 54 710 Td () Tj ET
+BT /F1 10 Tf 54 697 Td (Build a Manifest V3 Chrome extension called **Focus Buddy**. It should be a cute, strict) Tj ET
+BT /F1 10 Tf 54 684 Td (focus-session blocker with a retro desktop-buddy aesthetic. The extension must work) Tj ET
+BT /F1 10 Tf 54 671 Td (without a backend or build step: plain HTML, CSS, and JavaScript files only.) Tj ET
+BT /F1 10 Tf 54 658 Td () Tj ET
+BT /F3 12 Tf 54 640 Td (Core Product) Tj ET
+BT /F1 10 Tf 54 624 Td () Tj ET
+BT /F1 10 Tf 54 611 Td (Create a browser extension that lets the user start a timed focus session with:) Tj ET
+BT /F1 10 Tf 54 598 Td () Tj ET
+BT /F1 10 Tf 54 585 Td (* A text goal, such as "finish assignment" or "learn Next.js server actions".) Tj ET
+BT /F1 10 Tf 54 572 Td (* Duration presets: 25 minutes, 50 minutes, and 90 minutes, with 50 minutes selected) Tj ET
+BT /F1 10 Tf 54 559 Td (by default.) Tj ET
+BT /F1 10 Tf 54 546 Td (* A user-editable allowlist of websites that are permitted during focus mode.) Tj ET
+BT /F1 10 Tf 54 533 Td (* An optional Anthropic API key field for generating fresh, goal-aware motivational) Tj ET
+BT /F1 10 Tf 54 520 Td (lines.) Tj ET
+BT /F1 10 Tf 54 507 Td (* A visible focus streak count.) Tj ET
+BT /F1 10 Tf 54 494 Td (* A small animated/cute buddy mascot that encourages the user while they work and) Tj ET
+BT /F1 10 Tf 54 481 Td (scolds them when they open blocked sites.) Tj ET
+BT /F1 10 Tf 54 468 Td () Tj ET
+BT /F1 10 Tf 54 455 Td (During an active session, any `http` or `https` page whose hostname is not on the) Tj ET
+BT /F1 10 Tf 54 442 Td (allowlist must be blocked. Do not merely redirect the tab; inject a full-page overlay) Tj ET
+BT /F1 10 Tf 54 429 Td (into the current page so the user sees the blocked state immediately. The overlay must) Tj ET
+BT /F1 10 Tf 54 416 Td (prevent scrolling, show the user goal, show a live countdown, show the current streak,) Tj ET
+BT /F1 10 Tf 54 403 Td (and offer:) Tj ET
+BT /F1 10 Tf 54 390 Td () Tj ET
+BT /F1 10 Tf 54 377 Td (* "Back to work" button, which calls `history.back\(\)` or navigates to `about:blank`) Tj ET
+BT /F1 10 Tf 54 364 Td (if there is no previous page.) Tj ET
+BT /F1 10 Tf 54 351 Td (* "Notes" button, which opens a textarea for capturing distracting thoughts. Saved) Tj ET
+BT /F1 10 Tf 54 338 Td (notes must be appended to `chrome.storage.local.capturedNotes` and shown later in) Tj ET
+BT /F1 10 Tf 54 325 Td (the popup.) Tj ET
+BT /F1 10 Tf 54 312 Td (* "End session early" button, with confirmation. Ending early should not increment) Tj ET
+BT /F1 10 Tf 54 299 Td (the streak.) Tj ET
+BT /F1 10 Tf 54 286 Td () Tj ET
+BT /F1 10 Tf 54 273 Td (When a session naturally completes, increment the streak and store the completed goal.) Tj ET
+BT /F1 10 Tf 54 260 Td () Tj ET
+BT /F3 12 Tf 54 242 Td (Files to Create) Tj ET
+BT /F1 10 Tf 54 226 Td () Tj ET
+BT /F1 10 Tf 54 213 Td (Create this structure:) Tj ET
+BT /F1 10 Tf 54 200 Td () Tj ET
+BT /F1 10 Tf 54 187 Td () Tj ET
+BT /F2 8.5 Tf 54 181 Td (focus-buddy/) Tj ET
+BT /F2 8.5 Tf 54 170 Td (manifest.json) Tj ET
+BT /F2 8.5 Tf 54 159 Td (background.js) Tj ET
+BT /F2 8.5 Tf 54 148 Td (content.js) Tj ET
+BT /F2 8.5 Tf 54 137 Td (character.js) Tj ET
+BT /F2 8.5 Tf 54 126 Td (companion.css) Tj ET
+BT /F2 8.5 Tf 54 115 Td (popup.html) Tj ET
+BT /F2 8.5 Tf 54 104 Td (popup.css) Tj ET
+BT /F2 8.5 Tf 54 93 Td (popup.js) Tj ET
+BT /F2 8.5 Tf 54 82 Td (blocked.html) Tj ET
+BT /F2 8.5 Tf 54 71 Td (blocked.css) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2689 >>
+stream
+BT /F2 8.5 Tf 54 738 Td (blocked.js) Tj ET
+BT /F2 8.5 Tf 54 727 Td (buddy.webm) Tj ET
+BT /F2 8.5 Tf 54 716 Td (scold.mp3) Tj ET
+BT /F2 8.5 Tf 54 705 Td (icons/) Tj ET
+BT /F2 8.5 Tf 54 694 Td (icon16.png) Tj ET
+BT /F2 8.5 Tf 54 683 Td (icon48.png) Tj ET
+BT /F2 8.5 Tf 54 672 Td (icon128.png) Tj ET
+BT /F1 10 Tf 54 661 Td () Tj ET
+BT /F1 10 Tf 54 655 Td () Tj ET
+BT /F3 12 Tf 54 637 Td (Manifest) Tj ET
+BT /F1 10 Tf 54 621 Td () Tj ET
+BT /F1 10 Tf 54 608 Td (Use Manifest V3.) Tj ET
+BT /F1 10 Tf 54 595 Td () Tj ET
+BT /F1 10 Tf 54 582 Td (Required permissions:) Tj ET
+BT /F1 10 Tf 54 569 Td () Tj ET
+BT /F1 10 Tf 54 556 Td (* `storage`) Tj ET
+BT /F1 10 Tf 54 543 Td (* `webNavigation`) Tj ET
+BT /F1 10 Tf 54 530 Td (* `tabs`) Tj ET
+BT /F1 10 Tf 54 517 Td (* `alarms`) Tj ET
+BT /F1 10 Tf 54 504 Td (* `scripting`) Tj ET
+BT /F1 10 Tf 54 491 Td () Tj ET
+BT /F1 10 Tf 54 478 Td (Host permissions:) Tj ET
+BT /F1 10 Tf 54 465 Td () Tj ET
+BT /F1 10 Tf 54 452 Td (* `<all_urls>`) Tj ET
+BT /F1 10 Tf 54 439 Td () Tj ET
+BT /F1 10 Tf 54 426 Td (Use `background.js` as the service worker. Use `popup.html` as the action popup.) Tj ET
+BT /F1 10 Tf 54 413 Td (Register a content script on `<all_urls>` at `document_idle` that loads `character.js`,) Tj ET
+BT /F1 10 Tf 54 400 Td (then `content.js`, and injects `companion.css`. Expose `blocked.html`, `character.js`,) Tj ET
+BT /F1 10 Tf 54 387 Td (`buddy.webm`, and `scold.mp3` as web-accessible resources for all URLs.) Tj ET
+BT /F1 10 Tf 54 374 Td () Tj ET
+BT /F3 12 Tf 54 356 Td (State Model) Tj ET
+BT /F1 10 Tf 54 340 Td () Tj ET
+BT /F1 10 Tf 54 327 Td (Store all session state in `chrome.storage.local`.) Tj ET
+BT /F1 10 Tf 54 314 Td () Tj ET
+BT /F1 10 Tf 54 301 Td (Defaults:) Tj ET
+BT /F1 10 Tf 54 288 Td () Tj ET
+BT /F1 10 Tf 54 275 Td () Tj ET
+BT /F2 8.5 Tf 54 269 Td ({) Tj ET
+BT /F2 8.5 Tf 54 258 Td (active: false,) Tj ET
+BT /F2 8.5 Tf 54 247 Td (goal: "",) Tj ET
+BT /F2 8.5 Tf 54 236 Td (endTime: 0,) Tj ET
+BT /F2 8.5 Tf 54 225 Td (durationMin: 25,) Tj ET
+BT /F2 8.5 Tf 54 214 Td (allowlist: ["localhost", "127.0.0.1", "youtube.com", "claude.ai"],) Tj ET
+BT /F2 8.5 Tf 54 203 Td (streak: 0,) Tj ET
+BT /F2 8.5 Tf 54 192 Td (apiKey: "",) Tj ET
+BT /F2 8.5 Tf 54 181 Td (lastCompletedGoal: "") Tj ET
+BT /F2 8.5 Tf 54 170 Td (}) Tj ET
+BT /F1 10 Tf 54 159 Td () Tj ET
+BT /F1 10 Tf 54 153 Td () Tj ET
+BT /F1 10 Tf 54 140 Td (Also store captured notes as:) Tj ET
+BT /F1 10 Tf 54 127 Td () Tj ET
+BT /F1 10 Tf 54 114 Td () Tj ET
+BT /F2 8.5 Tf 54 108 Td (capturedNotes: [) Tj ET
+BT /F2 8.5 Tf 54 97 Td ({ text: string, goal: string, timestamp: number }) Tj ET
+BT /F2 8.5 Tf 54 86 Td (]) Tj ET
+BT /F1 10 Tf 54 75 Td () Tj ET
+BT /F1 10 Tf 54 69 Td () Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 3283 >>
+stream
+BT /F3 12 Tf 54 738 Td (Blocking Rules) Tj ET
+BT /F1 10 Tf 54 722 Td () Tj ET
+BT /F1 10 Tf 54 709 Td (Only block `http` and `https` URLs. Allow other schemes.) Tj ET
+BT /F1 10 Tf 54 696 Td () Tj ET
+BT /F1 10 Tf 54 683 Td (Normalize allowlist entries by:) Tj ET
+BT /F1 10 Tf 54 670 Td () Tj ET
+BT /F1 10 Tf 54 657 Td (* lowercasing,) Tj ET
+BT /F1 10 Tf 54 644 Td (* trimming whitespace,) Tj ET
+BT /F1 10 Tf 54 631 Td (* removing `http://` or `https://`,) Tj ET
+BT /F1 10 Tf 54 618 Td (* removing path portions after the hostname.) Tj ET
+BT /F1 10 Tf 54 605 Td () Tj ET
+BT /F1 10 Tf 54 592 Td (A host is allowed when it exactly equals an allowlist entry or is a subdomain of one.) Tj ET
+BT /F1 10 Tf 54 579 Td (For example, `mail.google.com` should match `google.com`.) Tj ET
+BT /F1 10 Tf 54 566 Td () Tj ET
+BT /F1 10 Tf 54 553 Td (The background worker should enforce blocking on:) Tj ET
+BT /F1 10 Tf 54 540 Td () Tj ET
+BT /F1 10 Tf 54 527 Td (* tab activation,) Tj ET
+BT /F1 10 Tf 54 514 Td (* tab URL update,) Tj ET
+BT /F1 10 Tf 54 501 Td (* completed tab load,) Tj ET
+BT /F1 10 Tf 54 488 Td (* browser window focus change.) Tj ET
+BT /F1 10 Tf 54 475 Td () Tj ET
+BT /F1 10 Tf 54 462 Td (If a content script is not already available in the tab, inject `companion.css`,) Tj ET
+BT /F1 10 Tf 54 449 Td (`character.js`, and `content.js` using `chrome.scripting`, then send the force-block) Tj ET
+BT /F1 10 Tf 54 436 Td (message.) Tj ET
+BT /F1 10 Tf 54 423 Td () Tj ET
+BT /F3 12 Tf 54 405 Td (Background Worker Behavior) Tj ET
+BT /F1 10 Tf 54 389 Td () Tj ET
+BT /F1 10 Tf 54 376 Td (Implement:) Tj ET
+BT /F1 10 Tf 54 363 Td () Tj ET
+BT /F1 10 Tf 54 350 Td (* Static fallback line banks for `encouragement`, `block`, and `complete`.) Tj ET
+BT /F1 10 Tf 54 337 Td (* `get-state`, `start-session`, `end-session`, `get-line`, and `check-blocked`) Tj ET
+BT /F1 10 Tf 54 324 Td (message handlers.) Tj ET
+BT /F1 10 Tf 54 311 Td (* `start-session`: set state, calculate `endTime`, create a `sessionEnd` alarm,) Tj ET
+BT /F1 10 Tf 54 298 Td (create a `refillLines` alarm every 4 minutes, clear AI line pools, optionally refill) Tj ET
+BT /F1 10 Tf 54 285 Td (AI lines, and greet the active tab.) Tj ET
+BT /F1 10 Tf 54 272 Td (* `end-session\(completed\)`: clear active state and alarms. If completed, increment) Tj ET
+BT /F1 10 Tf 54 259 Td (streak and save `lastCompletedGoal`.) Tj ET
+BT /F1 10 Tf 54 246 Td (* `sessionEnd` alarm should call `endSession\(true\)`.) Tj ET
+BT /F1 10 Tf 54 233 Td (* `refillLines` alarm should generate more AI lines if an API key is present.) Tj ET
+BT /F1 10 Tf 54 220 Td () Tj ET
+BT /F1 10 Tf 54 207 Td (For optional AI lines, call the Anthropic Messages API directly from the extension) Tj ET
+BT /F1 10 Tf 54 194 Td (background worker using:) Tj ET
+BT /F1 10 Tf 54 181 Td () Tj ET
+BT /F1 10 Tf 54 168 Td (* endpoint: `https://api.anthropic.com/v1/messages`) Tj ET
+BT /F1 10 Tf 54 155 Td (* model: `claude-fable-5`) Tj ET
+BT /F1 10 Tf 54 142 Td (* `anthropic-version: 2023-06-01`) Tj ET
+BT /F1 10 Tf 54 129 Td (* `anthropic-dangerous-direct-browser-access: true`) Tj ET
+BT /F1 10 Tf 54 116 Td () Tj ET
+BT /F1 10 Tf 54 103 Td (Prompt the model to return JSON only:) Tj ET
+BT /F1 10 Tf 54 90 Td () Tj ET
+BT /F1 10 Tf 54 77 Td () Tj ET
+BT /F2 8.5 Tf 54 71 Td ({) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 3608 >>
+stream
+BT /F2 8.5 Tf 54 738 Td ("encouragement": ["6 short strings"],) Tj ET
+BT /F2 8.5 Tf 54 727 Td ("block": ["6 short strings"],) Tj ET
+BT /F2 8.5 Tf 54 716 Td ("complete": ["3 short strings"]) Tj ET
+BT /F2 8.5 Tf 54 705 Td (}) Tj ET
+BT /F1 10 Tf 54 694 Td () Tj ET
+BT /F1 10 Tf 54 688 Td () Tj ET
+BT /F1 10 Tf 54 675 Td (Each line should be under 12 words, lowercase, playful, warm, and a little cheeky. If) Tj ET
+BT /F1 10 Tf 54 662 Td (anything fails, silently fall back to the static line banks.) Tj ET
+BT /F1 10 Tf 54 649 Td () Tj ET
+BT /F3 12 Tf 54 631 Td (Content Script Behavior) Tj ET
+BT /F1 10 Tf 54 615 Td () Tj ET
+BT /F1 10 Tf 54 602 Td (The content script is responsible for two UI systems:) Tj ET
+BT /F1 10 Tf 54 589 Td () Tj ET
+BT /F1 10 Tf 54 576 Td (1. A small corner companion.) Tj ET
+BT /F1 10 Tf 54 563 Td (2. A full-page blocking overlay.) Tj ET
+BT /F1 10 Tf 54 550 Td () Tj ET
+BT /F1 10 Tf 54 537 Td (Guard against duplicate injection with `window.__focusBuddyLoaded`.) Tj ET
+BT /F1 10 Tf 54 524 Td () Tj ET
+BT /F1 10 Tf 54 511 Td (All runtime messaging must go through a safe wrapper that catches invalidated extension) Tj ET
+BT /F1 10 Tf 54 498 Td (contexts. If `chrome.runtime` is unavailable or `chrome.runtime.lastError` occurs, fail) Tj ET
+BT /F1 10 Tf 54 485 Td (silently.) Tj ET
+BT /F1 10 Tf 54 472 Td () Tj ET
+BT /F1 10 Tf 54 459 Td (On page load:) Tj ET
+BT /F1 10 Tf 54 446 Td () Tj ET
+BT /F1 10 Tf 54 433 Td (* Send `check-blocked` with `location.hostname`.) Tj ET
+BT /F1 10 Tf 54 420 Td (* If blocked, show the block overlay.) Tj ET
+BT /F1 10 Tf 54 407 Td (* If not blocked, show the corner buddy with an encouragement line.) Tj ET
+BT /F1 10 Tf 54 394 Td (* If a session is active and the current host is allowed, schedule encouragement) Tj ET
+BT /F1 10 Tf 54 381 Td (popups every random 90 to 180 seconds.) Tj ET
+BT /F1 10 Tf 54 368 Td () Tj ET
+BT /F1 10 Tf 54 355 Td (Respond to background messages:) Tj ET
+BT /F1 10 Tf 54 342 Td () Tj ET
+BT /F1 10 Tf 54 329 Td (* `force-block`: show the block overlay.) Tj ET
+BT /F1 10 Tf 54 316 Td (* `buddy-say`: show a companion message unless the current page is blocked.) Tj ET
+BT /F1 10 Tf 54 303 Td () Tj ET
+BT /F3 12 Tf 54 285 Td (Buddy Media) Tj ET
+BT /F1 10 Tf 54 269 Td () Tj ET
+BT /F1 10 Tf 54 256 Td (Use `buddy.webm` as the visual mascot video. It should be a cute walking/talking girl or) Tj ET
+BT /F1 10 Tf 54 243 Td (pixel-art style buddy animation with transparent or visually removable background. The) Tj ET
+BT /F1 10 Tf 54 230 Td (original asset can be created with tools such as Veo, ChatGPT, Claude, pixel-art tools,) Tj ET
+BT /F1 10 Tf 54 217 Td (animation tools, a walking-girl animation workflow, and background-removal tooling.) Tj ET
+BT /F1 10 Tf 54 204 Td () Tj ET
+BT /F1 10 Tf 54 191 Td (Important behavior:) Tj ET
+BT /F1 10 Tf 54 178 Td () Tj ET
+BT /F1 10 Tf 54 165 Td (* The small corner buddy should use `buddy.webm` muted so autoplay works.) Tj ET
+BT /F1 10 Tf 54 152 Td (* The block overlay should show a large version of `buddy.webm`, not looped, sliding) Tj ET
+BT /F1 10 Tf 54 139 Td (in from the right.) Tj ET
+BT /F1 10 Tf 54 126 Td (* Use a separate `scold.mp3` voice clip for the blocked overlay because background) Tj ET
+BT /F1 10 Tf 54 113 Td (removal may remove the original video audio.) Tj ET
+BT /F1 10 Tf 54 100 Td (* Trigger `scold.mp3` about 2.5 seconds after the overlay media is created so it) Tj ET
+BT /F1 10 Tf 54 87 Td (lines up with the talking segment of the video.) Tj ET
+BT /F1 10 Tf 54 74 Td (* Attempt autoplay with sound first. If the browser blocks audio, wait for any page) Tj ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2697 >>
+stream
+BT /F1 10 Tf 54 738 Td (interaction such as pointer movement, pointer down, or keydown, then retry.) Tj ET
+BT /F1 10 Tf 54 725 Td (* If video playback fails or the extension context is stale, fall back to an inline) Tj ET
+BT /F1 10 Tf 54 712 Td (SVG mascot.) Tj ET
+BT /F1 10 Tf 54 699 Td () Tj ET
+BT /F3 12 Tf 54 681 Td (Character Fallback) Tj ET
+BT /F1 10 Tf 54 665 Td () Tj ET
+BT /F1 10 Tf 54 652 Td (Create `character.js` exposing:) Tj ET
+BT /F1 10 Tf 54 639 Td () Tj ET
+BT /F1 10 Tf 54 626 Td () Tj ET
+BT /F2 8.5 Tf 54 620 Td (window.FocusBuddyCharacter.svg\(mood\)) Tj ET
+BT /F1 10 Tf 54 609 Td () Tj ET
+BT /F1 10 Tf 54 603 Td () Tj ET
+BT /F1 10 Tf 54 590 Td (Supported moods:) Tj ET
+BT /F1 10 Tf 54 577 Td () Tj ET
+BT /F1 10 Tf 54 564 Td (* `cheer`) Tj ET
+BT /F1 10 Tf 54 551 Td (* `stern`) Tj ET
+BT /F1 10 Tf 54 538 Td (* `proud`) Tj ET
+BT /F1 10 Tf 54 525 Td (* `wave`) Tj ET
+BT /F1 10 Tf 54 512 Td () Tj ET
+BT /F1 10 Tf 54 499 Td (The SVG should be a cute pink pixel-ish blob mascot with eyes, blush, antenna, arms, and) Tj ET
+BT /F1 10 Tf 54 486 Td (mood-specific mouth/eyebrows/arm pose. The wave mood should include a waving arm that) Tj ET
+BT /F1 10 Tf 54 473 Td (CSS can animate.) Tj ET
+BT /F1 10 Tf 54 460 Td () Tj ET
+BT /F3 12 Tf 54 442 Td (Popup UI) Tj ET
+BT /F1 10 Tf 54 426 Td () Tj ET
+BT /F1 10 Tf 54 413 Td (The popup should be about 288px wide with a retro Windows/Tahoma look.) Tj ET
+BT /F1 10 Tf 54 400 Td () Tj ET
+BT /F1 10 Tf 54 387 Td (Idle view:) Tj ET
+BT /F1 10 Tf 54 374 Td () Tj ET
+BT /F1 10 Tf 54 361 Td (* Titlebar with "focus-buddy" and streak.) Tj ET
+BT /F1 10 Tf 54 348 Td (* Mascot SVG.) Tj ET
+BT /F1 10 Tf 54 335 Td (* Notes recap from the last session, if any, with a clear button.) Tj ET
+BT /F1 10 Tf 54 322 Td (* Goal input.) Tj ET
+BT /F1 10 Tf 54 309 Td (* Duration buttons.) Tj ET
+BT /F1 10 Tf 54 296 Td (* Collapsible "allowed sites & options".) Tj ET
+BT /F1 10 Tf 54 283 Td (* Allowlist textarea.) Tj ET
+BT /F1 10 Tf 54 270 Td (* Optional Claude API key password input.) Tj ET
+BT /F1 10 Tf 54 257 Td (* Start button.) Tj ET
+BT /F1 10 Tf 54 244 Td () Tj ET
+BT /F1 10 Tf 54 231 Td (Active view:) Tj ET
+BT /F1 10 Tf 54 218 Td () Tj ET
+BT /F1 10 Tf 54 205 Td (* Mascot SVG.) Tj ET
+BT /F1 10 Tf 54 192 Td (* Current goal.) Tj ET
+BT /F1 10 Tf 54 179 Td (* Live countdown.) Tj ET
+BT /F1 10 Tf 54 166 Td (* End session button.) Tj ET
+BT /F1 10 Tf 54 153 Td () Tj ET
+BT /F1 10 Tf 54 140 Td (Use `textContent` when rendering user notes to avoid HTML injection.) Tj ET
+BT /F1 10 Tf 54 127 Td () Tj ET
+BT /F3 12 Tf 54 109 Td (Overlay UI) Tj ET
+BT /F1 10 Tf 54 93 Td () Tj ET
+BT /F1 10 Tf 54 80 Td (The injected overlay should:) Tj ET
+BT /F1 10 Tf 54 67 Td () Tj ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 3471 >>
+stream
+BT /F1 10 Tf 54 738 Td (* Use maximum z-index.) Tj ET
+BT /F1 10 Tf 54 725 Td (* Freeze document scrolling while active, then restore it when removed.) Tj ET
+BT /F1 10 Tf 54 712 Td (* Add a teal blurred scrim with soft pink/yellow radial highlights.) Tj ET
+BT /F1 10 Tf 54 699 Td (* Place a retro dialog panel on the left and the large buddy video on the right.) Tj ET
+BT /F1 10 Tf 54 686 Td (* Slide the buddy in from off-screen right.) Tj ET
+BT /F1 10 Tf 54 673 Td (* Stack the dialog above the character on narrow screens.) Tj ET
+BT /F1 10 Tf 54 660 Td (* Respect `prefers-reduced-motion`.) Tj ET
+BT /F1 10 Tf 54 647 Td () Tj ET
+BT /F1 10 Tf 54 634 Td (Dialog content:) Tj ET
+BT /F1 10 Tf 54 621 Td () Tj ET
+BT /F1 10 Tf 54 608 Td (* Title: `focus-buddy.exe - access blocked`) Tj ET
+BT /F1 10 Tf 54 595 Td (* Random block line.) Tj ET
+BT /F1 10 Tf 54 582 Td (* `you're focusing on: <goal>`) Tj ET
+BT /F1 10 Tf 54 569 Td (* Live countdown.) Tj ET
+BT /F1 10 Tf 54 556 Td (* Buttons: back to work, notes, end session early.) Tj ET
+BT /F1 10 Tf 54 543 Td (* Notes textarea and save button when notes panel is open.) Tj ET
+BT /F1 10 Tf 54 530 Td (* Streak line.) Tj ET
+BT /F1 10 Tf 54 517 Td () Tj ET
+BT /F3 12 Tf 54 499 Td (Alternate Block Page) Tj ET
+BT /F1 10 Tf 54 483 Td () Tj ET
+BT /F1 10 Tf 54 470 Td (Also create `blocked.html`, `blocked.css`, and `blocked.js` as a standalone fallback) Tj ET
+BT /F1 10 Tf 54 457 Td (page. It should use the same retro style, static stern SVG mascot, random block line,) Tj ET
+BT /F1 10 Tf 54 444 Td (goal/from query params, live countdown, back button, end-session button, and streak) Tj ET
+BT /F1 10 Tf 54 431 Td (display. The current main enforcement path may use the injected overlay, but keep this) Tj ET
+BT /F1 10 Tf 54 418 Td (page available as a fallback resource.) Tj ET
+BT /F1 10 Tf 54 405 Td () Tj ET
+BT /F3 12 Tf 54 387 Td (Visual Style) Tj ET
+BT /F1 10 Tf 54 371 Td () Tj ET
+BT /F1 10 Tf 54 358 Td (Use:) Tj ET
+BT /F1 10 Tf 54 345 Td () Tj ET
+BT /F1 10 Tf 54 332 Td (* Tahoma / Segoe UI / Verdana.) Tj ET
+BT /F1 10 Tf 54 319 Td (* Retro desktop-window titlebars.) Tj ET
+BT /F1 10 Tf 54 306 Td (* Pink gradient titlebars using `#c0367f` and `#ff5fa2`.) Tj ET
+BT /F1 10 Tf 54 293 Td (* Dark purple text/borders `#2a1b3d`.) Tj ET
+BT /F1 10 Tf 54 280 Td (* Light gray/lavender panel backgrounds `#dcd7e3` and `#efecf4`.) Tj ET
+BT /F1 10 Tf 54 267 Td (* Teal blocked-page background/scrim `#0f8a8a`.) Tj ET
+BT /F1 10 Tf 54 254 Td (* Chunky borders and hard offset shadows.) Tj ET
+BT /F1 10 Tf 54 241 Td (* Rounded corners around 4-8px.) Tj ET
+BT /F1 10 Tf 54 228 Td () Tj ET
+BT /F3 12 Tf 54 210 Td (Acceptance Criteria) Tj ET
+BT /F1 10 Tf 54 194 Td () Tj ET
+BT /F1 10 Tf 54 181 Td (* Loading the unpacked extension shows the popup.) Tj ET
+BT /F1 10 Tf 54 168 Td (* Starting a session stores state and changes the popup into active countdown mode.) Tj ET
+BT /F1 10 Tf 54 155 Td (* Allowed sites remain usable.) Tj ET
+BT /F1 10 Tf 54 142 Td (* Disallowed sites get the injected overlay.) Tj ET
+BT /F1 10 Tf 54 129 Td (* The overlay countdown updates every second.) Tj ET
+BT /F1 10 Tf 54 116 Td (* The "back to work" button leaves the distracting page.) Tj ET
+BT /F1 10 Tf 54 103 Td (* Notes can be saved from the overlay and later appear in the popup recap.) Tj ET
+BT /F1 10 Tf 54 90 Td (* Ending early clears the session without incrementing streak.) Tj ET
+BT /F1 10 Tf 54 77 Td (* Natural completion increments streak.) Tj ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 493 >>
+stream
+BT /F1 10 Tf 54 738 Td (* The buddy appears on allowed pages during a session with encouragement every) Tj ET
+BT /F1 10 Tf 54 725 Td (90-180 seconds.) Tj ET
+BT /F1 10 Tf 54 712 Td (* The block overlay plays the buddy video and attempts the scold voice around 2.5) Tj ET
+BT /F1 10 Tf 54 699 Td (seconds after appearing.) Tj ET
+BT /F1 10 Tf 54 686 Td (* If media or extension context fails, the app degrades gracefully to the SVG buddy) Tj ET
+BT /F1 10 Tf 54 673 Td (and static line bank.) Tj ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R /F2 2 0 R /F3 3 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
+endobj
+19 0 obj
+<< /Type /Catalog /Pages 18 0 R >>
+endobj
+xref
+0 20
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000000147 00000 n 
+0000000222 00000 n 
+0000003799 00000 n 
+0000003946 00000 n 
+0000006687 00000 n 
+0000006834 00000 n 
+0000010169 00000 n 
+0000010316 00000 n 
+0000013977 00000 n 
+0000014126 00000 n 
+0000016876 00000 n 
+0000017025 00000 n 
+0000020549 00000 n 
+0000020698 00000 n 
+0000021243 00000 n 
+0000021392 00000 n 
+0000021490 00000 n 
+trailer
+<< /Size 20 /Root 19 0 R >>
+startxref
+21541
+%%EOF

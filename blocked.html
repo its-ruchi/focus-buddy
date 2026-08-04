@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blocked — Focus Buddy</title>
+  <link rel="stylesheet" href="blocked.css" />
+</head>
+<body>
+  <main class="dialog" role="alertdialog" aria-labelledby="dlg-title">
+    <div class="titlebar">
+      <span id="dlg-title">focus-buddy.exe — access blocked</span>
+      <span class="tb-btns"><i>_</i><i>□</i><i>×</i></span>
+    </div>
+    <div class="content">
+      <div class="char" id="char"></div>
+      <div class="msg">
+        <p class="line" id="line">back to work you go 💪</p>
+        <p class="goal">you're focusing on: <b id="goal">your goal</b></p>
+        <p class="from">tried to open: <span id="from">a distraction</span></p>
+        <p class="timer" id="timer">—</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="back" class="btn primary">← back to work</button>
+      <button id="end" class="btn">end session early</button>
+    </div>
+    <p class="streak">🔥 focus streak: <b id="streak">0</b></p>
+  </main>
+  <script src="character.js"></script>
+  <script src="blocked.js"></script>
+</body>
+</html>

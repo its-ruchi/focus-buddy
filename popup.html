@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Focus Buddy</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="titlebar">
+    <span>🌸 focus-buddy</span>
+    <span class="streak-badge">🔥 <b id="streak">0</b></span>
+  </div>
+
+  <div class="pad">
+    <div class="buddy" id="buddy"></div>
+
+    <!-- IDLE view -->
+    <div id="idle">
+      <div id="notes-recap" class="notes-recap hidden">
+        <div class="notes-recap-head">
+          <span>📝 notes from your last session</span>
+          <button id="notes-clear" class="notes-clear">clear</button>
+        </div>
+        <ul id="notes-list" class="notes-list"></ul>
+      </div>
+
+      <label class="lbl" for="goal">what are you focusing on?</label>
+      <input id="goal" class="field" type="text" placeholder="e.g. learn Next.js server actions" maxlength="80" />
+
+      <label class="lbl">for how long?</label>
+      <div class="durations" id="durations">
+        <button class="dur" data-min="25">25m</button>
+        <button class="dur active" data-min="50">50m</button>
+        <button class="dur" data-min="90">90m</button>
+        <input id="custom-dur" type="number" min="1" placeholder="custom" class="field dur-custom" />
+      </div>
+
+      <div class="more">
+        <div class="more-title">allowed sites &amp; options</div>
+        <label class="lbl" for="allow">sites allowed during focus (one per line)</label>
+        <textarea id="allow" class="field area" rows="3" placeholder="localhost&#10;github.com"></textarea>
+        
+      </div>
+
+      <button id="start" class="cta">start focusing →</button>
+    </div>
+
+    <!-- ACTIVE view -->
+    <div id="active" class="hidden">
+      <p class="active-goal">focusing on:<br /><b id="active-goal-text"></b></p>
+      <p class="countdown" id="countdown">--:--</p>
+      <button id="end" class="cta danger">end session</button>
+    </div>
+  </div>
+
+  <script src="character.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
