@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Focus Buddy</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="titlebar">
+    <span>🌸 focus-buddy</span>
+    <span class="streak-badge">🔥 <b id="streak">0</b></span>
+  </div>
+
+  <div class="pad">
+    <div class="buddy" id="buddy"></div>
+
+    <div class="always-on">
+      <div>
+        <b>24/7 Instagram + LinkedIn</b>
+        <p>Anytime: 15 bops or a 2-minute wait. During a focus session: Instagram and LinkedIn require the full 2-minute wait — no bop skip.</p>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="always-on" />
+        <span>on</span>
+      </label>
+    </div>
+
+    <!-- IDLE view -->
+    <div id="idle">
+      <div id="notes-recap" class="notes-recap hidden">
+        <div class="notes-recap-head">
+          <span>📝 notes from your last session</span>
+          <button id="notes-clear" class="notes-clear">clear</button>
+        </div>
+        <ul id="notes-list" class="notes-list"></ul>
+      </div>
+
+      <label class="lbl" for="goal">what are you focusing on?</label>
+      <input id="goal" class="field" type="text" placeholder="e.g. learn Next.js server actions" maxlength="80" />
+
+      <label class="lbl">for how long?</label>
+      <div class="durations" id="durations">
+        <button class="dur" data-min="25">25m</button>
+        <button class="dur active" data-min="50">50m</button>
+        <button class="dur" data-min="90">90m</button>
+      </div>
+
+      <details class="more">
+        <summary>allowed sites &amp; options</summary>
+        <label class="lbl" for="allow">sites allowed during focus (one per line)</label>
+        <textarea id="allow" class="field area" rows="3" placeholder="localhost&#10;github.com"></textarea>
+        <label class="lbl" for="key">claude fable 5 api key (optional — fresh pep talks)</label>
+        <input id="key" class="field" type="password" placeholder="sk-ant-... (stays on your device)" />
+      </details>
+
+      <button id="start" class="cta">start focusing →</button>
+    </div>
+
+    <!-- ACTIVE view -->
+    <div id="active" class="hidden">
+      <p class="active-goal">focusing on:<br /><b id="active-goal-text"></b></p>
+      <p class="countdown" id="countdown">--:--</p>
+
+      <div class="need-site">
+        <label class="lbl" for="add-site">need a work site mid-session?</label>
+        <input id="add-site" class="field" type="text" placeholder="github.com" spellcheck="false" />
+        <p class="add-site-msg" id="add-site-msg" hidden></p>
+        <div class="need-site-row">
+          <button type="button" id="allow-current" class="mini">allow this tab</button>
+          <button type="button" id="add-site-btn" class="mini primary">save &amp; allow</button>
+        </div>
+        <p class="lbl">allowed sites</p>
+        <ul class="allow-live" id="allow-live"></ul>
+      </div>
+
+      <button id="end" class="cta danger">end session</button>
+    </div>
+  </div>
+
+  <script src="character.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
