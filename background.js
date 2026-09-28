@@ -9,7 +9,8 @@ const DEFAULTS = {
   streak: 0,
   apiKey: "",
   lastCompletedGoal: "",
-  alwaysOn: true,
+  alwaysOn: false,
+  blockSites: ["instagram.com", "linkedin.com"],
   frictionSites: ["instagram.com", "linkedin.com"],
 };
 
@@ -88,8 +89,84 @@ function hostAllowed(host, allowlist) {
   return hostMatchesList(host, allowlist);
 }
 
-function isFrictionHost(host, sites) {
-  return hostMatchesList(host, sites && sites.length ? sites : DEFAULTS.frictionSites);
+function siteLabel(host) {
+  const h = normalizeHost(host);
+  if (h.includes("instagram")) return "Instagram";
+  if (h.includes("linkedin") || h === "lnkd.in") return "LinkedIn";
+  return h || "this site";
+}
+
+function chosenBlockSites(list) {
+  const out = [];
+  for (const raw of list || []) {
+    const host = normalizeHost(raw);
+    if (!host || !host.includes(".") || out.includes(host)) continue;
+    out.push(host);
+  }
+  return out.slice(0, 20);
+}
+
+function expandBlockSites(list) {
+  const out = chosenBlockSites(list);
+  if (out.some((h) => h === "linkedin.com" || h.endsWith(".linkedin.com")) && !out.includes("lnkd.in")) {
+    out.push("lnkd.in");
+  }
+  return out;
+}
+
+function isSessionBlockHost(host, st) {
+  return hostMatchesList(host, expandBlockSites(st && st.blockSites));
+}
+
+function sessionIsOn(st) {
+  return !!(st && st.active && Date.now() < st.endTime);
+}
+
+async function setDistractionRules(on, goal) {
+  try {
+    const existing = await chrome.declarativeNetRequest.getDynamicRules();
+    const removeRuleIds = existing.map((r) => r.id);
+    if (removeRuleIds.length) {
+      await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds });
+    }
+    if (!on) return;
+    const st = await getState();
+    const sites = expandBlockSites(st.blockSites);
+    if (!sites.length) return;
+    const q = "goal=" + encodeURIComponent(goal || st.goal || "your focus goal");
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      addRules: sites.map((domain, i) => ({
+        id: i + 1,
+        priority: 1,
+        action: {
+          type: "redirect",
+          redirect: {
+            extensionPath:
+              "/blocked.html?from=" + encodeURIComponent(siteLabel(domain)) + "&" + q,
+          },
+        },
+        condition: {
+          requestDomains: [domain],
+          resourceTypes: ["main_frame"],
+        },
+      })),
+    });
+  } catch (e) {
+    console.debug("Focus Buddy: block rules skipped —", e && e.message);
+  }
+}
+
+async function reloadDistractionTabs() {
+  try {
+    const st = await getState();
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      const h = hostFromUrl(tab.url);
+      if (tab.id && isSessionBlockHost(h, st)) {
+        chrome.tabs.reload(tab.id);
+      }
+    }
+  } catch {}
 }
 
 function normalizeHost(raw) {
@@ -124,10 +201,10 @@ async function addToAllowlist(raw) {
   const host = normalizeHost(raw);
   if (!host) return { ok: false, error: "Type a site like github.com" };
   const st = await getState();
-  if (isFrictionHost(host, st.frictionSites)) {
+  if (isSessionBlockHost(host, st)) {
     return {
       ok: false,
-      error: "Instagram and LinkedIn stay behind the 15-bop / 2-minute pause. They can't be allowlisted.",
+      error: "Instagram and LinkedIn stay blocked during a focus session. They can't be allowlisted.",
     };
   }
   const allowlist = Array.isArray(st.allowlist) ? st.allowlist.slice() : [];
@@ -160,10 +237,9 @@ async function classifyUrl(url) {
   const host = hostFromUrl(url);
   if (!host) return { friction: false, blocked: false, host: "" };
   const st = await getState();
-  const sessionOn = st.active && Date.now() < st.endTime;
-  const friction = isFrictionHost(host, st.frictionSites) && (!!st.alwaysOn || sessionOn);
-  const blocked = sessionOn && !friction && !hostAllowed(host, st.allowlist);
-  return { friction, blocked, host, st, sessionOn };
+  const sessionOn = sessionIsOn(st);
+  const blocked = sessionOn && isSessionBlockHost(host, st);
+  return { friction: false, blocked, host, st, sessionOn };
 }
 
 async function sendToTab(tabId, payload) {
@@ -203,6 +279,7 @@ async function maybeBlockTab(tabId, url) {
       goal: st.goal,
       endTime: st.endTime,
       streak: st.streak || 0,
+      locked: true,
     });
   }
 }
@@ -237,44 +314,77 @@ async function scanOpenTabs() {
   } catch {}
 }
 
+async function reconcileSession() {
+  const st = await getState();
+  if (st.alwaysOn) await setState({ alwaysOn: false });
+  if (st.active && Date.now() >= st.endTime) {
+    await endSession(true);
+    return;
+  }
+  const on = sessionIsOn(st);
+  await setDistractionRules(on, st.goal);
+  if (on) await reloadDistractionTabs();
+  await scanOpenTabs();
+}
+
 chrome.runtime.onInstalled.addListener(() => {
-  scanOpenTabs();
+  reconcileSession();
 });
 chrome.runtime.onStartup.addListener(() => {
-  scanOpenTabs();
+  reconcileSession();
 });
 
 // ---- Session lifecycle ----
-async function startSession({ goal, durationMin, allowlist, apiKey }) {
-  const endTime = Date.now() + durationMin * 60 * 1000;
+async function startSession({ goal, durationMin, apiKey, blockSites }) {
+  const minutes = Math.max(1, Number(durationMin) || 25);
+  const startedAt = Date.now();
+  const endTime = startedAt + minutes * 60 * 1000;
+  const sites = chosenBlockSites(Array.isArray(blockSites) ? blockSites : DEFAULTS.blockSites);
   await setState({
     active: true,
     goal: goal || "your focus goal",
-    durationMin,
+    durationMin: minutes,
+    startedAt,
     endTime,
-    allowlist: allowlist && allowlist.length ? allowlist : DEFAULTS.allowlist,
     apiKey: apiKey || "",
+    blockSites: sites,
+    alwaysOn: false,
   });
   aiPool = { encouragement: [], block: [], complete: [] };
+  await setDistractionRules(true, goal || "your focus goal");
   chrome.alarms.create("sessionEnd", { when: endTime });
   chrome.alarms.create("refillLines", { periodInMinutes: 4 });
   refillLines(); // kick off immediately if a key exists
-  greetActiveTab();
-  await scanOpenTabs(); // re-lock Instagram/LinkedIn with the 2-minute wait
+  await reloadDistractionTabs();
+  await scanOpenTabs();
 }
 
+let endingSession = false;
+
 async function endSession(completed) {
-  const st = await getState();
-  const patch = { active: false, endTime: 0 };
-  if (completed) {
-    patch.streak = (st.streak || 0) + 1;
-    patch.lastCompletedGoal = st.goal;
+  if (endingSession) return;
+  endingSession = true;
+  try {
+    const st = await getState();
+    if (!st.active) return;
+    await chrome.alarms.clear("sessionEnd");
+    const plannedMs = Math.max(1, Number(st.durationMin) || 0) * 60 * 1000;
+    const startedAt = st.startedAt || (st.endTime ? st.endTime - plannedMs : 0);
+    const elapsed = startedAt ? Date.now() - startedAt : 0;
+    const finishedWholeSession = elapsed + 2000 >= plannedMs;
+    const patch = { active: false, endTime: 0 };
+    if (finishedWholeSession) {
+      patch.streak = (st.streak || 0) + 1;
+      patch.lastCompletedGoal = st.goal;
+    }
+    await setState(patch);
+    await setDistractionRules(false);
+    chrome.alarms.clear("refillLines");
+    aiPool = { encouragement: [], block: [], complete: [] };
+    await scanOpenTabs();
+  } finally {
+    endingSession = false;
   }
-  await setState(patch);
-  chrome.alarms.clear("sessionEnd");
-  chrome.alarms.clear("refillLines");
-  aiPool = { encouragement: [], block: [], complete: [] };
-  if (completed) celebrateActiveTab();
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -366,20 +476,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendResponse({ line: getLine(msg.context) });
     } else if (msg.type === "check-blocked") {
       const st = await getState();
-      const active = st.active && Date.now() < st.endTime;
-      const friction =
-        isFrictionHost(msg.host || "", st.frictionSites) && (!!st.alwaysOn || active);
-      const blocked = active && !friction && !hostAllowed(msg.host || "", st.allowlist);
+      const active = sessionIsOn(st);
+      const blocked = active && isSessionBlockHost(msg.host || "", st);
       sendResponse({
         blocked,
-        friction,
-        waitOnly: !!(active && friction),
-        alwaysOn: !!st.alwaysOn,
+        locked: blocked,
+        friction: false,
+        waitOnly: false,
+        alwaysOn: false,
         active,
         goal: st.goal,
         endTime: st.endTime,
         streak: st.streak || 0,
         allowlist: st.allowlist,
+        blockSites: st.blockSites || [],
         frictionSites: st.frictionSites,
       });
     }

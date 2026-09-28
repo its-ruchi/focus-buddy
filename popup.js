@@ -8,9 +8,45 @@
     return new Promise((resolve) => chrome.runtime.sendMessage(msg, resolve));
   }
 
+  function prettySite(host) {
+    if (host === "instagram.com") return "Instagram";
+    if (host === "linkedin.com") return "LinkedIn";
+    return host;
+  }
+
+  function normalizeInput(raw) {
+    let s = String(raw || "").trim().toLowerCase();
+    if (!s) return "";
+    s = s.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "");
+    if (!s.includes(".")) return "";
+    return s;
+  }
+
+  function sitesFromBox() {
+    const seen = [];
+    $("distract").value.split("\n").forEach((line) => {
+      const host = normalizeInput(line);
+      if (host && seen.indexOf(host) === -1) seen.push(host);
+    });
+    return seen;
+  }
+
+  function fillDistractBox(list) {
+    const sites = (Array.isArray(list) ? list : ["instagram.com", "linkedin.com"])
+      .filter((h) => h && h !== "lnkd.in");
+    $("distract").value = sites.join("\n");
+  }
+
+  function blockedNote(sites) {
+    const names = (sites || [])
+      .filter((h) => h !== "lnkd.in")
+      .map(prettySite);
+    if (!names.length) return "No sites are blocked. This session is just a timer.";
+    return "Blocked until the timer ends: " + names.join(", ") + ".";
+  }
+
   function render(state) {
     $("streak").textContent = state.streak || 0;
-    $("always-on").checked = state.alwaysOn !== false;
     const running = state.active && Date.now() < state.endTime;
 
     if (running) {
@@ -18,72 +54,18 @@
       $("active").classList.remove("hidden");
       $("buddy").innerHTML = window.FocusBuddyCharacter.svg("wave");
       $("active-goal-text").textContent = state.goal;
+      $("blocked-note").textContent = blockedNote(state.blockSites);
       startCountdown(state.endTime);
       $("notes-recap").classList.add("hidden");
-      renderAllowLive(state.allowlist || []);
-      prefillCurrentTab();
     } else {
       $("active").classList.add("hidden");
       $("idle").classList.remove("hidden");
       $("buddy").innerHTML = window.FocusBuddyCharacter.svg("cheer");
-      // prefill allowlist from saved state
-      $("allow").value = (state.allowlist || ["localhost", "127.0.0.1", "youtube.com", "claude.ai"]).join("\n");
       if (state.apiKey) $("key").value = state.apiKey;
+      fillDistractBox(state.blockSites);
       stopCountdown();
       loadNotesRecap();
     }
-  }
-
-  function renderAllowLive(list) {
-    const ul = $("allow-live");
-    ul.innerHTML = "";
-    (list || []).forEach((site) => {
-      const li = document.createElement("li");
-      const name = document.createElement("span");
-      name.textContent = site;
-      const rm = document.createElement("button");
-      rm.type = "button";
-      rm.textContent = "remove";
-      rm.addEventListener("click", async () => {
-        await send({ type: "remove-allow", host: site });
-        refresh();
-      });
-      li.appendChild(name);
-      li.appendChild(rm);
-      ul.appendChild(li);
-    });
-  }
-
-  function showAddMsg(text, isErr) {
-    const el = $("add-site-msg");
-    el.hidden = !text;
-    el.textContent = text || "";
-    el.classList.toggle("err", !!isErr);
-  }
-
-  async function allowHost(raw) {
-    const r = await send({ type: "add-allow", host: raw });
-    if (!r || !r.ok) {
-      showAddMsg((r && r.error) || "Couldn't save that site.", true);
-      return;
-    }
-    showAddMsg(
-      r.already ? r.host + " was already allowed." : r.host + " saved. You can open it now.",
-      false
-    );
-    $("add-site").value = "";
-    refresh();
-  }
-
-  function prefillCurrentTab() {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const url = tabs && tabs[0] && tabs[0].url;
-      if (!url) return;
-      try {
-        const host = new URL(url).hostname.replace(/^www\./, "");
-        if (host && !$("add-site").value) $("add-site").value = host;
-      } catch {}
-    });
   }
 
   function loadNotesRecap() {
@@ -143,48 +125,22 @@
     b.classList.add("active");
   });
 
-  $("always-on").addEventListener("change", async (e) => {
-    await send({ type: "set-always-on", value: e.target.checked });
-  });
-
-  $("add-site-btn").addEventListener("click", () => {
-    allowHost($("add-site").value);
-  });
-  $("add-site").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") allowHost($("add-site").value);
-  });
-  $("allow-current").addEventListener("click", () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      const url = tabs && tabs[0] && tabs[0].url;
-      if (!url) {
-        showAddMsg("Couldn't read this tab.", true);
-        return;
-      }
-      try {
-        allowHost(new URL(url).hostname);
-      } catch {
-        showAddMsg("This tab isn't a normal website.", true);
-      }
-    });
-  });
-
-  // Start
   $("start").addEventListener("click", async () => {
     const goal = $("goal").value.trim();
-    const allowlist = $("allow").value
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean);
     const apiKey = $("key").value.trim();
     await send({
       type: "start-session",
-      payload: { goal, durationMin, allowlist, apiKey },
+      payload: { goal, durationMin, apiKey, blockSites: sitesFromBox() },
     });
     refresh();
   });
 
-  // End
   $("end").addEventListener("click", async () => {
+    const state = await send({ type: "get-state" });
+    const timeLeft = state && state.active && state.endTime > Date.now();
+    if (timeLeft && !confirm("End this session early? Your streak only counts if you finish the whole timer.")) {
+      return;
+    }
     await send({ type: "end-session" });
     refresh();
   });

@@ -34,6 +34,25 @@ body {
 }
 .always-on b { display: block; font-size: 12px; margin-bottom: 4px; }
 .always-on p { margin: 0; font-size: 11px; line-height: 1.35; color: #6b4b7a; }
+.focus-note {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #6b4b7a;
+}
+.picks { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.pick input { width: 16px; height: 16px; accent-color: #c0367f; cursor: pointer; }
+.add-row { display: flex; gap: 6px; align-items: center; }
+.add-row .field { flex: 1; min-width: 0; }
+.add-row .mini { flex: 0 0 auto; }
 .toggle {
   display: flex;
   flex-direction: column;

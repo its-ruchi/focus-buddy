@@ -211,11 +211,22 @@
   }
 
   // ---- Block overlay ----
+  function applyBlockLock(state) {
+    if (!overlayHost) return;
+    const allowBtn = overlayHost.querySelector('[data-act="allow"]');
+    const allowPanel = overlayHost.querySelector(".fb-allow");
+    if (allowBtn) allowBtn.hidden = !!state.locked;
+    if (state.locked && allowPanel) allowPanel.hidden = true;
+  }
+
   function showBlockOverlay(state) {
     hideCompanion();
+    removeFrictionOverlay();
+    frictionCleared = false;
     if (overlayHost) {
       overlayHost.querySelector(".fb-goal-text").textContent = state.goal || "your goal";
       overlayHost.querySelector(".fb-streak-n").textContent = state.streak || 0;
+      applyBlockLock(state);
       return;
     }
 
@@ -275,6 +286,7 @@
     overlayHost.querySelector(".fb-streak-n").textContent = state.streak || 0;
     overlayHost.querySelector(".fb-allow-input").value =
       (location.hostname || "").replace(/^www\./, "");
+    applyBlockLock(state);
 
     // Kick off the slide-in on the next frame so the initial transform is honored.
     requestAnimationFrame(() => {
@@ -422,173 +434,26 @@
     frictionWaitOnly = false;
   }
 
-  function showFrictionOverlay(host, opts) {
-    opts = opts || {};
-    const waitOnly = !!opts.waitOnly;
-    if (!waitOnly && isFrictionUnlocked()) {
-      removeFrictionOverlay();
-      return;
-    }
-    hideCompanion();
-    removeBlockOverlay();
-    if (waitOnly) frictionCleared = false;
-    if (frictionHost) {
-      if (waitOnly && !frictionWaitOnly) {
-        removeFrictionOverlay();
-      } else {
-        return;
-      }
-    }
-
-    const name = siteLabel(host);
-    frictionWaitOnly = waitOnly;
-    frictionWaitUntil = Date.now() + FRICTION_WAIT_MS;
-    let bops = 0;
-
-    const line = waitOnly
-      ? "you're in a focus block — " + name + " can wait"
-      : "caught you opening " + name;
-    const goal = waitOnly
-      ? "No skipping. Sit with this for 2 minutes, then decide if you still want it."
-      : "If you really want " + name + ", prove it on purpose — not by accident.";
-    const bopLine = waitOnly
-      ? "bops are off during focus. wait it out."
-      : "bop the buddy <b>0</b> / " + BOP_GOAL + " times";
-    const orLine = waitOnly ? "required wait" : "or wait it out";
-
-    frictionHost = document.createElement("div");
-    frictionHost.id = "focus-buddy-friction";
-    frictionHost.innerHTML = `
-      <div class="fb-scrim"></div>
-      <div class="fb-stage">
-        <div class="fb-dialog" role="alertdialog" aria-labelledby="fb-fr-title">
-          <div class="fb-titlebar">
-            <span class="fb-title" id="fb-fr-title">focus-buddy.exe — ${waitOnly ? "focus pause" : "pause first"}</span>
-          </div>
-          <div class="fb-msg">
-            <p class="fb-line"></p>
-            <p class="fb-goal"></p>
-            <p class="fb-bop-count"></p>
-            <p class="fb-or"></p>
-            <p class="fb-timer">02:00</p>
-          </div>
-          <div class="fb-actions">
-            <button class="fb-btn fb-primary" data-act="back">← never mind, go back</button>
-          </div>
-        </div>
-        <button class="fb-char${waitOnly ? "" : " fb-boppable"}" type="button" aria-label="bop the buddy">
-        </button>
-      </div>`;
-
-    frictionHost.querySelector(".fb-line").textContent = line;
-    frictionHost.querySelector(".fb-goal").textContent = goal;
-    frictionHost.querySelector(".fb-bop-count").innerHTML = bopLine;
-    frictionHost.querySelector(".fb-or").textContent = orLine;
-
-    prevHtmlOverflow = document.documentElement.style.overflow;
-    document.documentElement.style.overflow = "hidden";
-    document.documentElement.appendChild(frictionHost);
-
-    const charBtn = frictionHost.querySelector(".fb-char");
-    charBtn.appendChild(buddyMedia("stern", { muted: true }));
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (frictionHost) frictionHost.classList.add("fb-in");
-      });
-    });
-
-    const bopEl = frictionHost.querySelector(".fb-bop-count b");
-    const timerEl = frictionHost.querySelector(".fb-timer");
-
-    function onBop() {
-      if (waitOnly || isFrictionUnlocked() || !bopEl) return;
-      bops += 1;
-      bopEl.textContent = String(bops);
-      charBtn.classList.remove("fb-bop-hit");
-      void charBtn.offsetWidth;
-      charBtn.classList.add("fb-bop-hit");
-      if (bops >= BOP_GOAL) unlockFriction();
-    }
-
-    if (!waitOnly) {
-      charBtn.addEventListener("click", onBop);
-      charBtn.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onBop();
-        }
-      });
-    }
-
-    const tickWait = () => {
-      if (!frictionHost) return;
-      const left = frictionWaitUntil - Date.now();
-      if (left <= 0) {
-        timerEl.textContent = "00:00";
-        unlockFriction();
-        return;
-      }
-      timerEl.textContent = fmtRemaining(left);
-    };
-    tickWait();
-    frictionTimer = setInterval(tickWait, 250);
-
-    frictionHost.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-act]");
-      if (!btn) return;
-      if (btn.dataset.act === "back") {
-        if (history.length > 1) history.back();
-        else location.href = "about:blank";
-      }
-    });
+  function showFrictionOverlay() {
+    removeFrictionOverlay();
   }
 
-  // ---- Ambient corner companion (SVG only — quieter) ----
-  function ensureCompanion() {
-    if (companionHost) return companionHost;
-    companionHost = document.createElement("div");
-    companionHost.id = "focus-buddy-root";
-    companionHost.innerHTML = `
-      <div class="fb-window" role="status" aria-live="polite">
-        <div class="fb-titlebar">
-          <span class="fb-title">focus-buddy</span>
-          <button class="fb-x" aria-label="dismiss buddy">×</button>
-        </div>
-        <div class="fb-body">
-          <div class="fb-char"></div>
-          <div class="fb-bubble"></div>
-        </div>
-      </div>`;
-    document.documentElement.appendChild(companionHost);
-    companionHost.querySelector(".fb-x").addEventListener("click", () => {
-      dismissedForPage = true;
-      hideCompanion();
+  function killCornerBanner() {
+    document.querySelectorAll("#focus-buddy-root").forEach((node) => {
+      if (node.parentNode) node.parentNode.removeChild(node);
     });
-    return companionHost;
-  }
-
-  function showCompanion(mood, text) {
-    if (dismissedForPage) return;
-    ensureCompanion();
-    const charEl = companionHost.querySelector(".fb-char");
-    charEl.innerHTML = "";
-    charEl.appendChild(buddyMedia(mood, { muted: true }));
-    companionHost.querySelector(".fb-bubble").textContent = text;
-    companionHost.classList.add("fb-visible");
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(hideCompanion, 6500);
+    companionHost = null;
   }
 
   function hideCompanion() {
-    if (companionHost) companionHost.classList.remove("fb-visible");
+    killCornerBanner();
   }
 
-  function requestLine(cb) {
-    safeSendMessage({ type: "get-line", context: "encouragement" }, (r) => {
-      cb((r && r.line) || "keep going, you've got this 🌸");
-    });
-  }
+  try {
+    const bannerKiller = new MutationObserver(() => killCornerBanner());
+    bannerKiller.observe(document.documentElement, { childList: true });
+  } catch {}
+  killCornerBanner();
 
   // ---- React to nudges from the background (session start / complete) ----
   try {
@@ -599,7 +464,8 @@
       try {
         if (!msg) return;
         if (msg.type === "force-friction") {
-          showFrictionOverlay(msg.host || location.hostname, { waitOnly: !!msg.waitOnly });
+          removeFrictionOverlay();
+          killCornerBanner();
           return;
         }
         if (msg.type === "force-unblock") {
@@ -607,19 +473,19 @@
           return;
         }
         if (msg.type === "force-block") {
-          if (frictionHost || isFrictionUnlocked()) return;
           dismissedForPage = false;
+          frictionCleared = false;
           showBlockOverlay({
             goal: msg.goal,
             endTime: msg.endTime,
             streak: msg.streak || 0,
             blocked: true,
+            locked: msg.locked !== false,
           });
           return;
         }
         if (msg.type !== "buddy-say") return;
-        // Intentionally no right-side companion cards — they were popping up
-        // on every tab. Session complete still does nothing visual here.
+        killCornerBanner();
       } catch (e) {
         // Context invalidated while handling the message — stay silent.
         console.debug("Focus Buddy: message ignored — context invalidated");
@@ -632,12 +498,11 @@
     { type: "check-blocked", host: location.hostname },
     (st) => {
       if (!st) return;
-      if (st.friction) {
-        showFrictionOverlay(location.hostname, { waitOnly: !!st.waitOnly });
-        return;
-      }
       if (st.blocked) {
         showBlockOverlay(st);
+      } else {
+        removeFrictionOverlay();
+        killCornerBanner();
       }
     }
   );
@@ -650,12 +515,12 @@
         { type: "check-blocked", host: location.hostname },
         (st) => {
           if (!st) return;
-          if (st.friction) {
-            showFrictionOverlay(location.hostname, { waitOnly: !!st.waitOnly });
-            return;
+          if (st.blocked) showBlockOverlay(st);
+          else {
+            removeFrictionOverlay();
+            removeBlockOverlay();
+            killCornerBanner();
           }
-          removeFrictionOverlay();
-          if (!st.blocked) removeBlockOverlay();
         }
       );
     });
